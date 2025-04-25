@@ -1,3 +1,20 @@
+plugins {
+  // ...
+
+  // Add the dependency for the Google services Gradle plugin
+  
+
+}
+buildScript {
+    repositories{
+        google()
+        jcenter()
+    }
+dependencies{
+    classpath 'com.google.gms.google-services:4.4.1' 
+    }
+}
+
 allprojects {
     repositories {
         google()
