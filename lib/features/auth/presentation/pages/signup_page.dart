@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nutrition_app/features/auth/presentation/cubits/auth_cubit.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -10,42 +13,143 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _pwController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
 
-  // Sign-up logic without Firebase
-  Future<void> _signUp() async {
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _pwController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+//   Future<void> signUp() async {
+//   // TEMPORARY OVERRIDE - Comment out all other code
+//   final testEmail = 'test.sara@gmail.com';
+//   final testPassword = 'Test1234!';
+  
+//   debugPrint('Attempting direct Firebase registration with: $testEmail');
+  
+//   try {
+//     await FirebaseAuth.instance.createUserWithEmailAndPassword(
+//       email: testEmail,
+//       password: testPassword,
+//     );
+//     debugPrint('SUCCESS!');
+//   } on FirebaseAuthException catch (e) {
+//     debugPrint('FIREBASE ERROR: ${e.code} - ${e.message}');
+//   }
+// }
+Future<void> signUp() async {
+  // 1. Get and sanitize inputs
+  final rawEmail = _emailController.text;
+  final email = rawEmail
+    .trim()
+    .replaceAll(RegExp(r'[\u200E\u200F]'), ''); // Remove RTL marks
 
-    if (password != confirmPassword) {
-      _showErrorMessage('Passwords do not match');
-      return;
-    }
+  // 2. Deep debug
+  debugPrint('''
+=== EMAIL DEBUG INFO ===
+Raw input: "$rawEmail" 
+  - Length: ${rawEmail.length}
+  - Code units: ${rawEmail.codeUnits}
+Sanitized: "$email"
+  - Length: ${email.length}
+  - Code units: ${email.codeUnits}
+''');
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    await Future.delayed(Duration(seconds: 1)); // simulate delay
-
-    // Just navigate for now – replace this with your own logic later
-    Navigator.pushReplacementNamed(context, '/home');
-
-    setState(() {
-      _isLoading = false;
-    });
+  // 3. Validation
+  if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
+    debugPrint('FAILED REGEX VALIDATION');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Invalid email format'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return;
   }
 
-  // Function to show error messages
-  void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  // 4. Firebase test
+  try {
+    setState(() => _isLoading = true);
+    debugPrint('Attempting Firebase registration...');
+    
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: _pwController.text.trim(),
+    );
+    
+    debugPrint('Registration successful!');
+  } on FirebaseAuthException catch (e) {
+    debugPrint('FIREBASE ERROR: ${e.code} - ${e.message}');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Firebase error: ${e.message}'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  } finally {
+    if (mounted) setState(() => _isLoading = false);
   }
+}
+  // Future<void> signUp() async {
+  //   // Prepare email and password for sign-up
+  //   final String fullName = _fullNameController.text.trim();
+  //   final String email = _emailController.text.trim();
+  //   final String pw = _pwController.text.trim();
+  //   final String confirmPassword = _confirmPasswordController.text.trim();
+
+  //   // Ensure email and password are not empty
+  //   if (fullName.isEmpty ||
+  //       email.isEmpty ||
+  //       pw.isEmpty ||
+  //       confirmPassword.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('Please fill in all fields'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //     return;
+  //   }
+    
+  //   // Ensure password and confirm password match
+  //   if (pw != confirmPassword) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('Passwords do not match'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //     return;
+  //   }
+    
+  //   try {
+  //     setState(() => _isLoading = true);
+  //     // Call the register method if all validation passes
+  //     final authCubit = context.read<AuthCubit>();
+  //     await authCubit.register(fullName, email, pw);
+      
+  //     // If successful, you might want to navigate away or show success message
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Registration failed: ${e.toString()}'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() => _isLoading = false);
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -57,48 +161,48 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 80),
-
-              Text(
+              const SizedBox(height: 80),
+              const Text(
                 'Sign up',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 32),
-
+              const SizedBox(height: 32),
               TextField(
                 controller: _fullNameController,
                 decoration: InputDecoration(
                   hintText: 'Full Name',
-                  prefixIcon: Icon(Icons.person_outline),
+                  prefixIcon: const Icon(Icons.person_outline),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
-              SizedBox(height: 16),
-
+              const SizedBox(height: 16),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   hintText: 'Email',
-                  prefixIcon: Icon(Icons.email_outlined),
+                  prefixIcon: const Icon(Icons.email_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
-              SizedBox(height: 16),
-
+              const SizedBox(height: 16),
               TextField(
-                controller: _passwordController,
+                controller: _pwController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   hintText: 'Password',
-                  prefixIcon: Icon(Icons.lock_outline),
+                  prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
                     onPressed: () {
                       setState(() {
                         _obscurePassword = !_obscurePassword;
@@ -110,16 +214,19 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
-
+              const SizedBox(height: 16),
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirmPassword,
                 decoration: InputDecoration(
                   hintText: 'Confirm Password',
-                  prefixIcon: Icon(Icons.lock_outline),
+                  prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
                     onPressed: () {
                       setState(() {
                         _obscureConfirmPassword = !_obscureConfirmPassword;
@@ -131,32 +238,31 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 70),
-
+              const SizedBox(height: 70),
               ElevatedButton(
-                onPressed: _isLoading ? null : _signUp,
+                onPressed: _isLoading ? null : signUp,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[900],
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  minimumSize: Size(double.infinity, 50),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: _isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Text('Sign Up', style: TextStyle(color: Colors.white)),
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        'Sign Up',
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
-              SizedBox(height: 16),
-
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Already have an account? "),
+                  const Text("Already have an account? "),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                     child: Text(
                       'Login',
                       style: TextStyle(

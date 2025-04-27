@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrition_app/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:nutrition_app/features/auth/presentation/pages/signup_page.dart';
-import 'package:nutrition_app/pages/signup.dart';
 
 void main() {
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: LoginPage()));
@@ -147,7 +146,7 @@ void login() {
                       fontWeight: FontWeight.bold,
                       decoration:
                           TextDecoration
-                              .underline, // Optional: adds underline to make it look more like a link
+                              .underline, 
                     ),
                   ),
                 ),

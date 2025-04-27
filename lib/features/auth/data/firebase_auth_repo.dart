@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:nutrition_app/features/auth/domain/repo/auth_repo.dart';
 import 'package:nutrition_app/features/auth/domain/entities/app_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseAuthRepo implements AuthRepo {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-
+  final FirebaseFirestore firestoreFirestore = FirebaseFirestore.instance;
   @override
   Future<AppUser?> loginWithEmailAndPassword(
     String email,
@@ -40,8 +42,16 @@ class FirebaseAuthRepo implements AuthRepo {
         email: email,
         name: name,
       );
-      return user;
-    } catch (e) {
+
+      // Save user data to Firestore
+      await firestoreFirestore
+          .collection('users')
+          .doc(user.uid)
+          .set(user.toJson());
+
+    return user;
+    } 
+    catch (e) {
       throw Exception('Registration failed: $e');
     }
   }
