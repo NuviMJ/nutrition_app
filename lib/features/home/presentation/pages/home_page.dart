@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:nutrition_app/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:nutrition_app/features/home/presentation/component/my_drawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,16 +14,18 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
-        actions: [
+        // actions: [
           //logout button
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthCubit>().logout();
-            },
-          ),
-        ],
+          // IconButton(
+          //   icon: const Icon(Icons.logout),
+          //   onPressed: () {
+          //     context.read<AuthCubit>().logout();
+          //   },
+          // ),
+        // ],
       ),
+      //Drawer
+      drawer: const MyDrawer(),
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:nutrition_app/features/auth/data/firebase_auth_repo.dart';
 import 'package:nutrition_app/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:nutrition_app/features/auth/presentation/cubits/auth_states.dart';
 import 'package:nutrition_app/features/auth/presentation/pages/login_page.dart';
-import 'package:nutrition_app/features/post/presentation/pages/home_page.dart';
+import 'package:nutrition_app/features/home/presentation/pages/home_page.dart';
 import 'package:nutrition_app/themes/light_mode.dart';
 
 /*

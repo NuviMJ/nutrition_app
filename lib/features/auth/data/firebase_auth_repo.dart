@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:nutrition_app/features/auth/domain/repo/auth_repo.dart';
 import 'package:nutrition_app/features/auth/domain/entities/app_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
