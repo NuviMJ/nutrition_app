@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -26,23 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
-//   Future<void> signUp() async {
-//   // TEMPORARY OVERRIDE - Comment out all other code
-//   final testEmail = 'test.sara@gmail.com';
-//   final testPassword = 'Test1234!';
-  
-//   debugPrint('Attempting direct Firebase registration with: $testEmail');
-  
-//   try {
-//     await FirebaseAuth.instance.createUserWithEmailAndPassword(
-//       email: testEmail,
-//       password: testPassword,
-//     );
-//     debugPrint('SUCCESS!');
-//   } on FirebaseAuthException catch (e) {
-//     debugPrint('FIREBASE ERROR: ${e.code} - ${e.message}');
-//   }
-// }
+
 Future<void> signUp() async {
   // 1. Get and sanitize inputs
   final rawEmail = _emailController.text;
@@ -74,21 +59,75 @@ Sanitized: "$email"
   }
 
   // 4. Firebase test
+//   try {
+//     setState(() => _isLoading = true);
+//     debugPrint('Attempting Firebase registration...');
+    
+//     await FirebaseAuth.instance.createUserWithEmailAndPassword(
+//       email: email,
+//       password: _pwController.text.trim(),
+//     );
+    
+//     debugPrint('Registration successful!');
+//   } on FirebaseAuthException catch (e) {
+//     debugPrint('FIREBASE ERROR: ${e.code} - ${e.message}');
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text('Firebase error: ${e.message}'),
+//         backgroundColor: Colors.red,
+//       ),
+//     );
+//   } finally {
+//     if (mounted) setState(() => _isLoading = false);
+//   }
+// }
+ 
+   // 4. Firebase test
   try {
     setState(() => _isLoading = true);
     debugPrint('Attempting Firebase registration...');
     
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+    // Create user in Firebase Authentication
+    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: email,
       password: _pwController.text.trim(),
     );
     
-    debugPrint('Registration successful!');
+    debugPrint('Authentication registration successful!');
+    
+    // IMPORTANT: Create a document in Firestore with the same user ID
+    final uid = userCredential.user!.uid;
+    final name = _fullNameController.text.trim(); // Assuming you have a name field
+    
+    debugPrint('Creating Firestore profile for user: $uid');
+    
+    // Create user profile document in Firestore
+    debugPrint('Attempting to create user profile...'); 
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'name': name.isNotEmpty ? name : 'User', // Use name if available
+      'email': email,
+      'photoUrl': '',
+      'bio': '',
+      'createdAt': FieldValue.serverTimestamp(),
+      // Add any other fields you need for your app
+    });
+    
+    debugPrint('Firestore profile created successfully!');
+    
   } on FirebaseAuthException catch (e) {
-    debugPrint('FIREBASE ERROR: ${e.code} - ${e.message}');
+    debugPrint('FIREBASE AUTH ERROR: ${e.code} - ${e.message}');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Firebase error: ${e.message}'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  } catch (e) {
+    // This will catch Firestore errors or other exceptions
+    debugPrint('OTHER ERROR: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: $e'),
         backgroundColor: Colors.red,
       ),
     );
@@ -96,58 +135,6 @@ Sanitized: "$email"
     if (mounted) setState(() => _isLoading = false);
   }
 }
-  // Future<void> signUp() async {
-  //   // Prepare email and password for sign-up
-  //   final String fullName = _fullNameController.text.trim();
-  //   final String email = _emailController.text.trim();
-  //   final String pw = _pwController.text.trim();
-  //   final String confirmPassword = _confirmPasswordController.text.trim();
-
-  //   // Ensure email and password are not empty
-  //   if (fullName.isEmpty ||
-  //       email.isEmpty ||
-  //       pw.isEmpty ||
-  //       confirmPassword.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Please fill in all fields'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //     return;
-  //   }
-    
-  //   // Ensure password and confirm password match
-  //   if (pw != confirmPassword) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Passwords do not match'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //     return;
-  //   }
-    
-  //   try {
-  //     setState(() => _isLoading = true);
-  //     // Call the register method if all validation passes
-  //     final authCubit = context.read<AuthCubit>();
-  //     await authCubit.register(fullName, email, pw);
-      
-  //     // If successful, you might want to navigate away or show success message
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Registration failed: ${e.toString()}'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   } finally {
-  //     if (mounted) {
-  //       setState(() => _isLoading = false);
-  //     }
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {

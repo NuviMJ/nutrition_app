@@ -26,86 +26,75 @@ class MyDrawer extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Icon(Icons.person, size: 100, color: Colors.grey[700]),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               //divider line
               const Divider(color: Colors.grey, thickness: 1),
-              
+
               //name
               const Text(
                 'Your Nutrition App',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              
+
               const SizedBox(height: 10),
-              
+
               //HOME TILE
-              MyDrawerTile(title: "HOME", icon: Icons.home, onTap: () => Navigator.of(context).pop()),
-              
+              MyDrawerTile(
+                title: "HOME",
+                icon: Icons.home,
+                onTap: () => Navigator.of(context).pop(),
+              ),
+
               MyDrawerTile(
                 title: "HEALTH TIPS",
                 icon: Icons.health_and_safety_rounded,
-                onTap: () {
-                  Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
-                  ),
-                );
-                },
+                onTap: () {},
               ),
 
               MyDrawerTile(
                 title: "MEAL OF THE WEEK",
                 icon: Icons.restaurant_menu,
+                onTap: () {},
+              ),
+
+              MyDrawerTile(
+                title: "PROFILE",
+                icon: Icons.person,
                 onTap: () {
+                  //pop menu drawer
                   Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
-                  ),
-                );
+                  //get current user uid
+                  final user = context.read<AuthCubit>().currentUser;
+                  String? uid = user!.uid;
+                  //navigate to profile page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePage(uid: uid),
+                    ),
+                  );
                 },
               ),
 
-              MyDrawerTile(title: "PROFILE", icon: Icons.person, onTap: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
-                  ),
-                );
-              }),
+              MyDrawerTile(
+                title: "SETTING",
+                icon: Icons.settings,
+                onTap: () {},
+              ),
 
-              MyDrawerTile(title: "SETTING", icon: Icons.settings, onTap: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
-                  ),
-                );
-              }),
-              
               //SEARCH TILE
-              MyDrawerTile(title: "SEARCH", icon: Icons.search, onTap: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
-                  ),
-                );
-              }),
+              MyDrawerTile(title: "SEARCH", icon: Icons.search, onTap: () {}),
 
               const Spacer(),
 
               //logout tile
-              MyDrawerTile(title: "LOGOUT", icon: Icons.login, onTap: () =>context.read<AuthCubit>().logout()),
+              MyDrawerTile(
+                title: "LOGOUT",
+                icon: Icons.login,
+                onTap: () => context.read<AuthCubit>().logout(),
+              ),
             ],
           ),
         ),

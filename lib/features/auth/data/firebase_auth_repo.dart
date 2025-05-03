@@ -6,27 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class FirebaseAuthRepo implements AuthRepo {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firestoreFirestore = FirebaseFirestore.instance;
-  @override
-  Future<AppUser?> loginWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    try {
-      UserCredential userCredential = await firebaseAuth
-          .signInWithEmailAndPassword(email: email, password: password);
-      //App user
-      AppUser user = AppUser(
-        uid: userCredential.user!.uid,
-        email: email,
-        name: '',
-      );
-      return user;
-    } catch (e) {
-      throw Exception('Login failed: $e');
-    }
-  }
 
-  @override
+    @override
   Future<AppUser?> registerWithEmailAndPassword(
     String email,
     String password,
@@ -35,7 +16,8 @@ class FirebaseAuthRepo implements AuthRepo {
     try {
       UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
-      //App user
+
+      //create user
       AppUser user = AppUser(
         uid: userCredential.user!.uid,
         email: email,
@@ -56,6 +38,27 @@ class FirebaseAuthRepo implements AuthRepo {
   }
 
   @override
+  Future<AppUser?> loginWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
+    try {
+      UserCredential userCredential = await firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password);
+          
+      //App user
+      AppUser user = AppUser(
+        uid: userCredential.user!.uid,
+        email: email,
+        name: '',
+      );
+      return user;
+    } catch (e) {
+      throw Exception('Login failed: $e');
+    }
+  }
+
+  @override
   Future<void> logout() async {
     await firebaseAuth.signOut();
   }
@@ -70,3 +73,4 @@ class FirebaseAuthRepo implements AuthRepo {
     return AppUser(uid: firebaseUser.uid, email: firebaseUser.email!, name: '');
   }
 }
+

@@ -3,8 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nutrition_app/features/auth/data/firebase_auth_repo.dart';
 import 'package:nutrition_app/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:nutrition_app/features/auth/presentation/cubits/auth_states.dart';
+import 'package:nutrition_app/features/auth/presentation/pages/auth_page.dart';
 import 'package:nutrition_app/features/auth/presentation/pages/login_page.dart';
 import 'package:nutrition_app/features/home/presentation/pages/home_page.dart';
+import 'package:nutrition_app/features/profile/data/firebase_profile_repo.dart';
+import 'package:nutrition_app/features/profile/presentation/cubits/profile_cubit.dart';
 import 'package:nutrition_app/themes/light_mode.dart';
 
 /*
@@ -31,11 +34,27 @@ class MyApp extends StatelessWidget {
   final authRepo = FirebaseAuthRepo();
   MyApp({super.key});
 
+  //profile repositary
+  final profileRepo = FirebaseProfileRepo();
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthCubit(authRepo: authRepo)..checkAuth(),
-      child: MaterialApp(
+    return MultiBlocProvider( providers: [
+      //auth cubit
+      BlocProvider<AuthCubit>(
+        create: (context) => AuthCubit(authRepo: authRepo)..checkAuth(),
+      ),
+      //profile cubit
+      BlocProvider<ProfileCubit>(
+        create: (context) => ProfileCubit(profileRepo: profileRepo),
+      ),
+      
+      //post cubit
+      // BlocProvider<PostCubit>(
+      //   create: (context) => PostCubit(postRepo: PostRepo()),
+      // ),
+    ],
+    child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: lightMode,
         //home:LoginPage(),
@@ -46,7 +65,7 @@ class MyApp extends StatelessWidget {
               return const HomePage();
             }
             if (authState is Unauthenticated) {
-              return const LoginPage();
+              return const AuthPage();
             }
             else {
               return const Scaffold(
