@@ -6,8 +6,13 @@ import 'package:nutrition_app/features/auth/presentation/cubits/auth_states.dart
 import 'package:nutrition_app/features/auth/presentation/pages/auth_page.dart';
 import 'package:nutrition_app/features/auth/presentation/pages/login_page.dart';
 import 'package:nutrition_app/features/home/presentation/pages/home_page.dart';
+import 'package:nutrition_app/features/post/data/firebase_post_repo.dart';
+import 'package:nutrition_app/features/post/presentation/cubits/post_cubits.dart';
 import 'package:nutrition_app/features/profile/data/firebase_profile_repo.dart';
+import 'package:nutrition_app/features/storage/data/firebase_storage_repo.dart'; // Ensure this path is correct
+import 'package:nutrition_app/features/post/presentation/cubits/post_cubits.dart'; // Ensure this path is correct
 import 'package:nutrition_app/features/profile/presentation/cubits/profile_cubit.dart';
+import 'package:nutrition_app/features/storage/data/firebase_storage_repo.dart';
 import 'package:nutrition_app/themes/light_mode.dart';
 
 /*
@@ -37,22 +42,37 @@ class MyApp extends StatelessWidget {
   //profile repositary
   final profileRepo = FirebaseProfileRepo();
 
+  //storage repository
+  final firebaseStorageRepo = FirebaseStorageRepo();
+  
+  //post repositary
+  final firebasePostRepo = FirebasePostRepo();
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider( providers: [
+
       //auth cubit
       BlocProvider<AuthCubit>(
         create: (context) => AuthCubit(authRepo: authRepo)..checkAuth(),
       ),
+
       //profile cubit
       BlocProvider<ProfileCubit>(
-        create: (context) => ProfileCubit(profileRepo: profileRepo),
+        //create: (context) => ProfileCubit(profileRepo: profileRepo),
+        create: (context) => ProfileCubit(
+          profileRepo: profileRepo,
+          storageRepo: firebaseStorageRepo,
+        ),
+          
       ),
       
       //post cubit
-      // BlocProvider<PostCubit>(
-      //   create: (context) => PostCubit(postRepo: PostRepo()),
-      // ),
+      BlocProvider<PostCubits>(
+        create: (context) => PostCubits(
+          postRepo: firebasePostRepo,
+          storageRepo: firebaseStorageRepo,
+        ),
+      ),
     ],
     child: MaterialApp(
         debugShowCheckedModeBanner: false,

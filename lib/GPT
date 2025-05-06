@@ -1,0 +1,296 @@
+import 'package:flutter/material.dart';
+
+class ProfilePage extends StatelessWidget {
+  final String name;
+  final String occupation;
+  final String additionalInfo;
+  final String profileImageUrl;
+  final int postsCount;
+  final int videosCount;
+  final List<String> postImages;
+
+  const ProfilePage({
+    Key? key,
+    required this.name,
+    required this.occupation,
+    required this.additionalInfo,
+    required this.profileImageUrl,
+    required this.postsCount,
+    required this.videosCount,
+    required this.postImages,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF004D00), // Dark green color
+        elevation: 0,
+        leading: const Icon(Icons.arrow_back),
+        actions: const [
+          Icon(Icons.more_vert),
+          SizedBox(width: 12),
+        ],
+      ),
+      body: Column(
+        children: [
+          _buildProfileSection(),
+          _buildCountsSection(),
+          _buildGridView(),
+          const Spacer(),
+          _buildBottomNavigationBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileSection() {
+    return Container(
+      padding: const EdgeInsets.only(top: 0),
+      color: const Color(0xFF004D00), // Dark green color
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(bottom: 16),
+            decoration: const BoxDecoration(
+              color: Color(0xFF004D00),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(0),
+                bottomRight: Radius.circular(0),
+              ),
+            ),
+            child: Column(
+              children: [
+                // Profile image with add button
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 4),
+                        image: DecorationImage(
+                          image: NetworkImage(profileImageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.add,
+                          size: 20,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Name
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                // Occupation
+                Text(
+                  occupation,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                // Additional info
+                Text(
+                  additionalInfo,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Action buttons
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF004D00),
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.white),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          child: const Text('Like'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          child: const Text('Edit Profile'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCountsSection() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey, width: 0.5),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Column(
+            children: [
+              const Icon(Icons.grid_3x3, size: 20),
+              const SizedBox(height: 4),
+              Text(
+                '$postsCount Posts',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          Column(
+            children: [
+              const Icon(Icons.video_library, size: 20),
+              const SizedBox(height: 4),
+              Text(
+                '$videosCount Videos',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridView() {
+    return Expanded(
+      child: GridView.builder(
+        padding: const EdgeInsets.all(1),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 1,
+          mainAxisSpacing: 1,
+        ),
+        itemCount: postImages.length,
+        itemBuilder: (context, index) {
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(postImages[index]),
+                fit: BoxFit.cover,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Colors.grey, width: 0.5),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: const [
+          Icon(Icons.home, size: 24),
+          Icon(Icons.search, size: 24),
+          Icon(Icons.add_box, size: 24),
+          Icon(Icons.favorite_border, size: 24),
+          Icon(Icons.person_outline, size: 24),
+        ],
+      ),
+    );
+  }
+}
+
+// Example Usage
+class ProfilePageExample extends StatelessWidget {
+  const ProfilePageExample({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Sample data
+    const String name = "Sara Greson";
+    const String occupation = "Associate Software Engineer";
+    const String additionalInfo = "Freelance, Content Creator";
+    const String profileImageUrl = "https://example.com/profile.jpg"; // Replace with your image URL
+    
+    // Sample post images (replace with your image URLs)
+    final List<String> postImages = [
+      "https://example.com/food1.jpg",
+      "https://example.com/food2.jpg",
+      "https://example.com/food3.jpg",
+      "https://example.com/food4.jpg",
+      "https://example.com/food5.jpg",
+      "https://example.com/food6.jpg",
+      "https://example.com/food7.jpg",
+      "https://example.com/food8.jpg",
+      "https://example.com/food9.jpg",
+    ];
+
+    return ProfilePage(
+      name: name,
+      occupation: occupation,
+      additionalInfo: additionalInfo,
+      profileImageUrl: profileImageUrl,
+      postsCount: 9,
+      videosCount: 0,
+      postImages: postImages,
+    );
+  }
+}
