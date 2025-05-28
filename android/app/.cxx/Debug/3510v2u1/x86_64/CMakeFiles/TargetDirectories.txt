@@ -1,0 +1,2 @@
+C:/Users/PASINDU/Downloads/foodies-main/foodies-main/android/app/.cxx/Debug/3510v2u1/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/PASINDU/Downloads/foodies-main/foodies-main/android/app/.cxx/Debug/3510v2u1/x86_64/CMakeFiles/rebuild_cache.dir
