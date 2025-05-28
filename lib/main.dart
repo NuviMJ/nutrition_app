@@ -21,7 +21,7 @@ class FoodiesApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.herbalTheme,
       home: const HomePage(),
-      home: const LandingPage(),
+      //home: const LandingPage(),
       // routes: {
       //   '/login': (context) => const LoginPage(),
       // },
