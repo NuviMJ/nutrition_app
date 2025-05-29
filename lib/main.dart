@@ -24,7 +24,7 @@ class FoodiesApp extends StatelessWidget {
       //  home: const HomePage(),
       home: const LandingPage(),
       routes: {
-        // '/login': (context) => const LoginPage(),
+         '/login': (context) => const LoginPage(),
       },
 
       home: const HomePage(),
