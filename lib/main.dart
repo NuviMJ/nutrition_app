@@ -20,11 +20,19 @@ class FoodiesApp extends StatelessWidget {
       title: 'Foodies',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.herbalTheme,
+ mvd-perera-comment-and-landing
       //  home: const HomePage(),
       home: const LandingPage(),
       routes: {
         // '/login': (context) => const LoginPage(),
       },
+
+      home: const HomePage(),
+      //home: const LandingPage(),
+       routes: {
+         '/login': (context) => const LoginPage(),
+       },
+ main
     );
   }
 }
