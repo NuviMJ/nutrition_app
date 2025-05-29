@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:foodies/pages/login_page.dart';
 import 'package:foodies/pages/home_page.dart';
-import 'package:foodies/pages/landingpage.dart';  // Your updated landing page with navigation logic
+import 'package:foodies/pages/landingpage.dart';
+// Your updated landing page with navigation logic
 import 'theme/app_theme.dart';
 
 void main() async {
@@ -20,11 +20,19 @@ class FoodiesApp extends StatelessWidget {
       title: 'Foodies',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.herbalTheme,
+ mvd-perera-comment-and-landing
+      //  home: const HomePage(),
+      home: const LandingPage(),
+      routes: {
+        // '/login': (context) => const LoginPage(),
+      },
+
       home: const HomePage(),
       //home: const LandingPage(),
        routes: {
          '/login': (context) => const LoginPage(),
        },
+ main
     );
   }
 }
