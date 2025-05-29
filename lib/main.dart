@@ -22,9 +22,9 @@ class FoodiesApp extends StatelessWidget {
       theme: AppTheme.herbalTheme,
       home: const HomePage(),
       //home: const LandingPage(),
-      // routes: {
-      //   '/login': (context) => const LoginPage(),
-      // },
+       routes: {
+         '/login': (context) => const LoginPage(),
+       },
     );
   }
 }
